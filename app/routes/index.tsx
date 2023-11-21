@@ -1,11 +1,17 @@
 import { conform, useForm } from "@conform-to/react";
-import { parse } from "@conform-to/zod";
+import { getFieldsetConstraint, parse } from "@conform-to/zod";
 import {
   json,
   type DataFunctionArgs,
   type MetaFunction,
 } from "@remix-run/node";
-import { Form, useActionData, useLoaderData } from "@remix-run/react";
+import {
+  Form,
+  useActionData,
+  useLoaderData,
+  useNavigation,
+} from "@remix-run/react";
+import React from "react";
 import { z } from "zod";
 
 const addItemsSchema = z.object({
@@ -40,18 +46,34 @@ export const meta: MetaFunction = () => {
 };
 
 export default function Index() {
+  const formRef = React.useRef<HTMLFormElement>(null);
+  const navigation = useNavigation();
+
   const loaderData = useLoaderData<typeof loader>();
-  const acttionData = useActionData<typeof action>();
+  const actionData = useActionData<typeof action>();
   const [form, fields] = useForm({
     id: "create-items-form",
+    ref: formRef,
+    constraint: getFieldsetConstraint(addItemsSchema),
     onValidate: (args) => {
       return parse(args.formData, { schema: addItemsSchema });
     },
     shouldValidate: "onSubmit",
     shouldRevalidate: "onInput",
     lastSubmission:
-      typeof acttionData !== "undefined" ? acttionData.submission : undefined,
+      typeof actionData !== "undefined" ? actionData.submission : undefined,
   });
+
+  React.useEffect(() => {
+    if (
+      navigation.state === "idle" &&
+      formRef.current !== null &&
+      typeof actionData !== "undefined" &&
+      actionData.status === "success"
+    ) {
+      formRef.current.reset();
+    }
+  }, [actionData, navigation.state]);
 
   return (
     <div className="m-4 font-sans leading-relaxed flex flex-col gap-4">
