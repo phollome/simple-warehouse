@@ -7,7 +7,7 @@ import {
   useLocation,
   useSearchParams,
 } from "@remix-run/react";
-import { getItemsById, getItemsCount, searchForItems } from "~/data/items";
+import { getItemsByIDs, getItemsCount, searchForItems } from "~/data/items";
 import { action as deleteAction } from "./items/delete";
 
 export async function loader(args: DataFunctionArgs) {
@@ -20,12 +20,17 @@ export async function loader(args: DataFunctionArgs) {
 
   const query = searchParams.get("query");
   const ids = searchParams.getAll("id");
+  const sort = searchParams.get("sort");
+
   if (query !== null) {
-    const result = searchForItems(query);
+    const result = searchForItems(query, { sort });
     return json({ items: result, itemsCount });
   }
   if (ids.length > 0) {
-    const result = getItemsById(ids.map((id) => parseInt(id, 10)));
+    const result = getItemsByIDs(
+      ids.map((id) => parseInt(id, 10)),
+      { sort }
+    );
     return json({ items: result, itemsCount });
   }
 

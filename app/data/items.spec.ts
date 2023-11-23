@@ -3,9 +3,9 @@ import {
   addItem,
   deleteItem,
   dropItems,
-  getItemById,
+  getItemByID,
   getItems,
-  getItemsById,
+  getItemsByIDs,
   getItemsCount,
   searchForItems,
 } from "./items";
@@ -43,6 +43,12 @@ test("search for items", () => {
     { id: 2, name: "test2" },
     { id: 3, name: "test3" },
   ]);
+
+  expect(searchForItems("test", { sort: "desc" })).toEqual([
+    { id: 3, name: "test3" },
+    { id: 2, name: "test2" },
+    { id: 1, name: "test1" },
+  ]);
 });
 
 test("get items by id", () => {
@@ -50,13 +56,16 @@ test("get items by id", () => {
   addItem({ name: "test2" });
   addItem({ name: "test3" });
 
-  const item = getItemById(1);
+  const item = getItemByID(1);
   expect(item).toEqual({ id: 1, name: "test1" });
 
-  const items = getItemsById([1, 3]);
-  expect(items).toEqual([
+  expect(getItemsByIDs([1, 3])).toEqual([
     { id: 1, name: "test1" },
     { id: 3, name: "test3" },
+  ]);
+  expect(getItemsByIDs([1, 3], { sort: "desc" })).toEqual([
+    { id: 3, name: "test3" },
+    { id: 1, name: "test1" },
   ]);
 });
 

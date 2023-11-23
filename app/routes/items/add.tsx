@@ -20,6 +20,9 @@ export async function action(args: DataFunctionArgs) {
     const url = new URL(request.url);
 
     const searchParams = url.searchParams;
+
+    searchParams.set("sort", "desc");
+
     searchParams.append("id", result.id.toString());
 
     const path = url.pathname;

@@ -19,26 +19,50 @@ export function getItemsCount() {
   return items.length;
 }
 
-export function searchForItems(query: string) {
+export function searchForItems(
+  query: string,
+  options?: { sort?: "asc" | "desc" | (string | null) }
+) {
+  const { sort = "asc" } = options || {};
+
   const lowerCasesQuery = query.toLowerCase();
-  const filteredItems = items.filter((item) => {
-    const lowerCasedName = item.name.toLowerCase();
-    return lowerCasedName.includes(lowerCasesQuery);
-  });
+  const filteredItems = items
+    .filter((item) => {
+      const lowerCasedName = item.name.toLowerCase();
+      return lowerCasedName.includes(lowerCasesQuery);
+    })
+    .sort((a, b) => {
+      if (sort === "desc") {
+        return b.id - a.id;
+      }
+      return a.id - b.id;
+    });
   return filteredItems;
 }
 
-export function getItemById(id: number) {
+export function getItemByID(id: number) {
   const item = items.find((item) => {
     return item.id === id;
   });
   return item;
 }
 
-export function getItemsById(ids: number[]) {
-  const filteredItems = items.filter((item) => {
-    return ids.includes(item.id);
-  });
+export function getItemsByIDs(
+  ids: number[],
+  options?: { sort?: "asc" | "desc" | (string | null) }
+) {
+  const { sort = "asc" } = options || {};
+
+  const filteredItems = items
+    .filter((item) => {
+      return ids.includes(item.id);
+    })
+    .sort((a, b) => {
+      if (sort === "desc") {
+        return b.id - a.id;
+      }
+      return a.id - b.id;
+    });
   return filteredItems;
 }
 
