@@ -24,12 +24,12 @@ function Search() {
   return (
     <Form method="get" {...form.props} className="border px-4 py-2">
       <div className="flex gap-2">
-        <div className="flex flex-col gap-1">
+        <div className="flex flex-col gap-1 w-full">
           <label htmlFor={fields.query.id} className="text-sm">
             Search for
           </label>
           <div className="flex gap-2">
-            <input {...conform.input(fields.query)} className="border-2" />
+            <input {...conform.input(fields.query)} className="border-2 grow" />
             <button
               type="submit"
               className="border border-black bg-gray-300 hover:bg-gray-200 active:bg-gray-400 px-2"
