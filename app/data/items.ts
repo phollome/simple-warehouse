@@ -20,3 +20,12 @@ export function getItems() {
 export function getItemsCount() {
   return items.length;
 }
+
+export function searchForItems(query: string) {
+  const lowerCasesQuery = query.toLowerCase();
+  const filteredItems = items.filter((item) => {
+    const lowerCasedName = item.name.toLowerCase();
+    return lowerCasedName.includes(lowerCasesQuery);
+  });
+  return filteredItems;
+}

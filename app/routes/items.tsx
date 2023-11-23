@@ -1,11 +1,21 @@
 import { json, type DataFunctionArgs } from "@remix-run/node";
 import { NavLink, Outlet, useLoaderData } from "@remix-run/react";
-import { getItems } from "~/data/items";
+import { getItems, getItemsCount, searchForItems } from "~/data/items";
 
 export async function loader(args: DataFunctionArgs) {
-  const items = getItems();
+  const { request } = args;
 
-  return json({ items });
+  const url = new URL(request.url);
+  const searchParams = url.searchParams;
+
+  const itemsCount = getItemsCount();
+
+  const query = searchParams.get("query");
+  if (query !== null) {
+    const result = searchForItems(query);
+    return json({ items: result, itemsCount });
+  }
+  return json({ items: [], itemsCount });
 }
 
 export default function Items() {
@@ -20,7 +30,7 @@ export default function Items() {
       <h1 className="text-xl font-bold">
         Items{" "}
         <span className="text-gray-400 italic font-normal">
-          ({loaderData.items.length})
+          ({loaderData.itemsCount})
         </span>
       </h1>
       <div className="flex gap-2">

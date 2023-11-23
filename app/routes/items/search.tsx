@@ -1,5 +1,5 @@
 import { conform, useForm } from "@conform-to/react";
-import { getFieldsetConstraint } from "@conform-to/zod";
+import { getFieldsetConstraint, parse } from "@conform-to/zod";
 import { Form } from "@remix-run/react";
 import { z } from "zod";
 
@@ -14,6 +14,11 @@ function Search() {
   const [form, fields] = useForm({
     id: "search-items-form",
     constraint: getFieldsetConstraint(searchSchema),
+    onValidate: (args) => {
+      return parse(args.formData, { schema: searchSchema });
+    },
+    shouldValidate: "onSubmit",
+    shouldRevalidate: "onInput",
   });
 
   return (
