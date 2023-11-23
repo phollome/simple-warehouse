@@ -1,5 +1,5 @@
 import { json, type DataFunctionArgs } from "@remix-run/node";
-import { Link, Outlet, useLoaderData } from "@remix-run/react";
+import { NavLink, Outlet, useLoaderData } from "@remix-run/react";
 import { getItems } from "~/data/items";
 
 export async function loader(args: DataFunctionArgs) {
@@ -11,6 +11,10 @@ export async function loader(args: DataFunctionArgs) {
 export default function Items() {
   const loaderData = useLoaderData<typeof loader>();
 
+  const getNavLinkClasses = (props: { isActive: boolean }) => {
+    return props.isActive ? "" : "text-blue-400 underline hover:no-underline";
+  };
+
   return (
     <div className="m-4 font-sans leading-relaxed flex flex-col gap-4">
       <h1 className="text-xl font-bold">
@@ -20,12 +24,12 @@ export default function Items() {
         </span>
       </h1>
       <div className="flex gap-2">
-        <Link to="./search" className="text-blue-500 underline">
+        <NavLink to="./search" className={getNavLinkClasses}>
           Search
-        </Link>
-        <Link to="./add" className="text-blue-500 underline">
+        </NavLink>
+        <NavLink to="./add" className={getNavLinkClasses}>
           Add
-        </Link>
+        </NavLink>
       </div>
       <Outlet />
 
