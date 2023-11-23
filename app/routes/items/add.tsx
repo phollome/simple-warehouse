@@ -45,15 +45,10 @@ function Add() {
   });
 
   React.useEffect(() => {
-    if (
-      navigation.state === "idle" &&
-      formRef.current !== null &&
-      typeof actionData !== "undefined" &&
-      actionData.status === "success"
-    ) {
+    if (navigation.state === "idle" && formRef.current !== null) {
       formRef.current.reset();
     }
-  }, [actionData, navigation.state]);
+  }, [navigation.state]);
 
   return (
     <Form method="post" {...form.props} className="border px-4 py-2">
