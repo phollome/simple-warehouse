@@ -1,6 +1,7 @@
 import { afterEach, expect, test } from "vitest";
 import {
   addItem,
+  deleteItem,
   dropItems,
   getItemById,
   getItems,
@@ -54,6 +55,19 @@ test("get items by id", () => {
 
   const items = getItemsById([1, 3]);
   expect(items).toEqual([
+    { id: 1, name: "test1" },
+    { id: 3, name: "test3" },
+  ]);
+});
+
+test("delete items", () => {
+  const { id: _id1 } = addItem({ name: "test1" });
+  const { id: _id2 } = addItem({ name: "test2" });
+  const { id: _id3 } = addItem({ name: "test3" });
+
+  deleteItem(_id2);
+  expect(getItemsCount()).toBe(2);
+  expect(getItems()).toEqual([
     { id: 1, name: "test1" },
     { id: 3, name: "test3" },
   ]);

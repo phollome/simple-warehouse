@@ -1,14 +1,19 @@
 import { conform, useForm } from "@conform-to/react";
 import { getFieldsetConstraint, parse } from "@conform-to/zod";
-import { json, type DataFunctionArgs, redirect } from "@remix-run/node";
+import { json, redirect, type DataFunctionArgs } from "@remix-run/node";
 import { Form, useActionData, useNavigation } from "@remix-run/react";
 import React from "react";
-import { addItem, itemSchema } from "~/data/items";
+import { z } from "zod";
+import { addItem } from "~/data/items";
+
+const addItemSchema = z.object({
+  name: z.string().min(3, "Must be at least 3 characters"),
+});
 
 export async function action(args: DataFunctionArgs) {
   const { request } = args;
   const formData = await request.formData();
-  const submission = parse(formData, { schema: itemSchema });
+  const submission = parse(formData, { schema: addItemSchema });
 
   if (typeof submission.value !== "undefined" && submission.value !== null) {
     const result = addItem(submission.value);
@@ -34,9 +39,9 @@ function Add() {
   const [form, fields] = useForm({
     id: "create-items-form",
     ref: formRef,
-    constraint: getFieldsetConstraint(itemSchema),
+    constraint: getFieldsetConstraint(addItemSchema),
     onValidate: (args) => {
-      return parse(args.formData, { schema: itemSchema });
+      return parse(args.formData, { schema: addItemSchema });
     },
     shouldValidate: "onSubmit",
     shouldRevalidate: "onInput",

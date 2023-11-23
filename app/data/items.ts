@@ -1,15 +1,11 @@
-import { z } from "zod";
-
-export const itemSchema = z.object({
-  id: z.number().optional(),
-  name: z.string().min(3, "Must be at least 3 characters"),
-});
-
-type item = z.infer<typeof itemSchema> & { id: number };
+type item = {
+  id: number;
+  name: string;
+};
 
 let items: item[] = [];
 
-export function addItem(item: z.infer<typeof itemSchema>) {
+export function addItem(item: Omit<item, "id">) {
   const itemToAdd = { ...item, id: items.length + 1 };
   items.push(itemToAdd);
   return itemToAdd;
@@ -44,6 +40,12 @@ export function getItemsById(ids: number[]) {
     return ids.includes(item.id);
   });
   return filteredItems;
+}
+
+export function deleteItem(id: number) {
+  items = items.filter((item) => {
+    return item.id !== id;
+  });
 }
 
 export function dropItems() {
