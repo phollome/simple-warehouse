@@ -1,6 +1,6 @@
 import { json, type DataFunctionArgs } from "@remix-run/node";
 import { NavLink, Outlet, useLoaderData } from "@remix-run/react";
-import { getItems, getItemsCount, searchForItems } from "~/data/items";
+import { getItemsById, getItemsCount, searchForItems } from "~/data/items";
 
 export async function loader(args: DataFunctionArgs) {
   const { request } = args;
@@ -11,10 +11,16 @@ export async function loader(args: DataFunctionArgs) {
   const itemsCount = getItemsCount();
 
   const query = searchParams.get("query");
+  const ids = searchParams.getAll("id");
   if (query !== null) {
     const result = searchForItems(query);
     return json({ items: result, itemsCount });
   }
+  if (ids.length > 0) {
+    const result = getItemsById(ids.map((id) => parseInt(id, 10)));
+    return json({ items: result, itemsCount });
+  }
+
   return json({ items: [], itemsCount });
 }
 

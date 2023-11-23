@@ -11,11 +11,12 @@ export async function action(args: DataFunctionArgs) {
   const submission = parse(formData, { schema: itemSchema });
 
   if (typeof submission.value !== "undefined" && submission.value !== null) {
-    addItem(submission.value);
+    const result = addItem(submission.value);
     const url = new URL(request.url);
-    const searchParams = url.searchParams;
 
-    searchParams.append("query", submission.value.name);
+    const searchParams = url.searchParams;
+    searchParams.append("id", result.id.toString());
+
     const path = url.pathname;
     const redirectUrl = `${path}?${searchParams.toString()}`;
 
