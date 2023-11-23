@@ -1,6 +1,6 @@
 import { conform, useForm } from "@conform-to/react";
 import { getFieldsetConstraint, parse } from "@conform-to/zod";
-import { json, type DataFunctionArgs } from "@remix-run/node";
+import { json, type DataFunctionArgs, redirect } from "@remix-run/node";
 import { Form, useActionData, useNavigation } from "@remix-run/react";
 import React from "react";
 import { addItem, itemSchema } from "~/data/items";
@@ -12,7 +12,14 @@ export async function action(args: DataFunctionArgs) {
 
   if (typeof submission.value !== "undefined" && submission.value !== null) {
     addItem(submission.value);
-    return json({ status: "success", submission });
+    const url = new URL(request.url);
+    const searchParams = url.searchParams;
+
+    searchParams.append("query", submission.value.name);
+    const path = url.pathname;
+    const redirectUrl = `${path}?${searchParams.toString()}`;
+
+    return redirect(redirectUrl);
   }
 
   return json({ status: "error", submission });

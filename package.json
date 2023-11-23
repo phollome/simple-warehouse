@@ -7,7 +7,8 @@
     "build": "remix build",
     "dev": "remix dev --manual",
     "start": "remix-serve ./build/index.js",
-    "typecheck": "tsc"
+    "typecheck": "tsc",
+    "test": "vitest run --coverage"
   },
   "dependencies": {
     "@conform-to/react": "^0.9.1",
@@ -27,9 +28,11 @@
     "@remix-run/eslint-config": "^2.3.0",
     "@types/react": "^18.2.20",
     "@types/react-dom": "^18.2.7",
+    "@vitest/coverage-v8": "^0.34.6",
     "eslint": "^8.38.0",
     "tailwindcss": "^3.3.5",
-    "typescript": "^5.1.6"
+    "typescript": "^5.1.6",
+    "vitest": "^0.34.6"
   },
   "engines": {
     "node": ">=18.0.0"

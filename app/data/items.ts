@@ -7,7 +7,7 @@ export const itemSchema = z.object({
 
 type item = z.infer<typeof itemSchema> & { id: number };
 
-const items: item[] = [];
+let items: item[] = [];
 
 export function addItem(item: z.infer<typeof itemSchema>) {
   items.push({ ...item, id: items.length + 1 });
@@ -28,4 +28,8 @@ export function searchForItems(query: string) {
     return lowerCasedName.includes(lowerCasesQuery);
   });
   return filteredItems;
+}
+
+export function dropItems() {
+  items = [];
 }
