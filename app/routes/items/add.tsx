@@ -46,6 +46,7 @@ function Add() {
       formRef.current.reset();
     }
   }, [actionData, navigation.state]);
+
   return (
     <Form method="post" {...form.props} className="border px-4 py-2">
       <div className="flex gap-2">
@@ -66,7 +67,6 @@ function Add() {
             <p className="text-sm text-red-400">{fields.name.error}</p>
           )}
         </div>
-        <div className="self-center"></div>
       </div>
     </Form>
   );
