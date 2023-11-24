@@ -8,7 +8,7 @@ const deleteSchema = z.object({
   redirect_url: z
     .string()
     .regex(
-      /^\/items(\/add|\/search)?(\?.*)?$/i,
+      /^\/items\/?(\/add|\/search)?(\?.*)?$/i,
       "Must redirect to /items and its subroutes"
     ),
 });
