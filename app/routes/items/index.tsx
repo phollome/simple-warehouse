@@ -1,5 +1,9 @@
-import { type DataFunctionArgs, redirect } from "@remix-run/node";
-
-export async function loader(args: DataFunctionArgs) {
-  return redirect("./search");
+export async function loader() {
+  return null;
 }
+
+function Index() {
+  return null;
+}
+
+export default Index;

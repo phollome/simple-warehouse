@@ -1,5 +1,6 @@
 import { json, type DataFunctionArgs } from "@remix-run/node";
 import {
+  Link,
   NavLink,
   Outlet,
   useFetcher,
@@ -7,7 +8,12 @@ import {
   useLocation,
   useSearchParams,
 } from "@remix-run/react";
-import { getItemsByIDs, getItemsCount, searchForItems } from "~/data/items";
+import {
+  getItems,
+  getItemsByIDs,
+  getItemsCount,
+  searchForItems,
+} from "~/data/items";
 import { action as deleteAction } from "./items/delete";
 
 export async function loader(args: DataFunctionArgs) {
@@ -16,25 +22,35 @@ export async function loader(args: DataFunctionArgs) {
   const url = new URL(request.url);
   const searchParams = url.searchParams;
 
-  const itemsCount = getItemsCount();
-
   const query = searchParams.get("query");
   const ids = searchParams.getAll("id");
   const sort = searchParams.get("sort");
+  const page = parseInt(searchParams.get("page") ?? "1", 10);
+  const take = 5;
+  const skip = (page - 1) * take;
 
   if (query !== null) {
-    const result = searchForItems(query, { sort });
-    return json({ items: result, itemsCount });
+    const itemsCount = getItemsCount({ query });
+
+    const result = searchForItems(query, { sort, skip, take });
+    const numberOfPages = Math.ceil(itemsCount / take);
+    return json({ items: result, itemsCount, page, numberOfPages });
   }
   if (ids.length > 0) {
-    const result = getItemsByIDs(
-      ids.map((id) => parseInt(id, 10)),
-      { sort }
-    );
-    return json({ items: result, itemsCount });
-  }
+    const parsedIDs = ids.map((id) => parseInt(id, 10));
+    const result = getItemsByIDs(parsedIDs, { sort, skip, take });
 
-  return json({ items: [], itemsCount });
+    const itemsCount = getItemsCount({ ids: parsedIDs });
+
+    const numberOfPages = Math.ceil(itemsCount / take);
+    return json({ items: result, itemsCount, page, numberOfPages });
+  }
+  const result = getItems({ skip, take, sort });
+
+  const itemsCount = getItemsCount();
+  const numberOfPages = Math.ceil(itemsCount / take);
+
+  return json({ items: result, itemsCount, page, numberOfPages });
 }
 
 export default function Items() {
@@ -49,12 +65,14 @@ export default function Items() {
 
   return (
     <div className="m-4 font-sans leading-relaxed flex flex-col gap-4">
-      <h1 className="text-xl font-bold">
-        Items{" "}
-        <span className="text-gray-400 italic font-normal">
-          ({loaderData.itemsCount})
-        </span>
-      </h1>
+      <Link to="./" className="underline hover:no-underline">
+        <h1 className="text-xl font-bold">
+          Items{" "}
+          <span className="text-gray-400 italic font-normal">
+            ({loaderData.itemsCount})
+          </span>
+        </h1>
+      </Link>
       <div className="flex gap-2">
         <NavLink to="./search" className={getNavLinkClasses}>
           Search
@@ -124,6 +142,38 @@ export default function Items() {
           );
         })}
       </ul>
+      {loaderData.numberOfPages > 1 && (
+        <ul className="w-full flex gap-4 justify-center">
+          {Array.from({ length: loaderData.numberOfPages }).map((_, index) => {
+            const page = index + 1;
+            const url = new URL(`http://localhost:3000${location.pathname}`);
+
+            url.searchParams.set("page", page.toString());
+            searchParams.getAll("id").forEach((id) => {
+              url.searchParams.append("id", id);
+            });
+            const query = searchParams.get("query");
+            if (query !== null) {
+              url.searchParams.append("query", query);
+            }
+
+            const pageLinkClasses =
+              page !== loaderData.page
+                ? "text-blue-400 underline hover:no-underline"
+                : "cursor-default";
+            return (
+              <li key={`page-${page}`}>
+                <Link
+                  to={url.pathname + url.search}
+                  className={pageLinkClasses}
+                >
+                  {page}
+                </Link>
+              </li>
+            );
+          })}
+        </ul>
+      )}
     </div>
   );
 }
