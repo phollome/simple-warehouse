@@ -1,4 +1,4 @@
-import type { LinksFunction } from "@remix-run/node";
+import { json, type LinksFunction } from "@remix-run/node";
 import {
   Links,
   LiveReload,
@@ -6,13 +6,27 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
+  useLoaderData,
 } from "@remix-run/react";
+import config from "~/config.server";
 
 import styles from "./tailwind.css";
 
+export type RootOutletContext = {
+  baseURL: string;
+};
+
 export const links: LinksFunction = () => [{ rel: "stylesheet", href: styles }];
 
+export async function loader() {
+  return json({ baseURL: config.get("baseURL") } as const);
+}
+
 export default function App() {
+  const loaderData = useLoaderData<typeof loader>();
+
+  console.log(loaderData);
+
   return (
     <html lang="en">
       <head>
@@ -22,7 +36,7 @@ export default function App() {
         <Links />
       </head>
       <body>
-        <Outlet />
+        <Outlet context={loaderData} />
         <ScrollRestoration />
         <Scripts />
         <LiveReload />

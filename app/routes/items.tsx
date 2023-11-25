@@ -6,6 +6,8 @@ import {
   useFetcher,
   useLoaderData,
   useLocation,
+  useOutletContext,
+  useRouteLoaderData,
   useSearchParams,
 } from "@remix-run/react";
 import {
@@ -15,6 +17,7 @@ import {
   searchForItems,
 } from "~/data/items";
 import { action as deleteAction } from "./items/delete";
+import { type RootOutletContext } from "~/root";
 
 export async function loader(args: DataFunctionArgs) {
   const { request } = args;
@@ -58,6 +61,8 @@ export default function Items() {
   const fetcher = useFetcher<typeof deleteAction>({ key: "delete-item" });
   const [searchParams] = useSearchParams();
   const location = useLocation();
+  const context = useOutletContext<RootOutletContext>();
+  console.log(context);
 
   const getNavLinkClasses = (props: { isActive: boolean }) => {
     return props.isActive ? "" : "text-blue-400 underline hover:no-underline";
@@ -85,9 +90,7 @@ export default function Items() {
 
       <ul className="flex flex-col gap-1">
         {loaderData.items.map((item) => {
-          const redirectURL = new URL(
-            `http://localhost:3000${location.pathname}`
-          );
+          const redirectURL = new URL(`${context.baseURL}${location.pathname}`);
 
           const idsWithoutCurrent = searchParams.getAll("id").filter((id) => {
             return parseInt(id, 10) !== item.id;
@@ -146,7 +149,7 @@ export default function Items() {
         <ul className="w-full flex gap-4 justify-center">
           {Array.from({ length: loaderData.numberOfPages }).map((_, index) => {
             const page = index + 1;
-            const url = new URL(`http://localhost:3000${location.pathname}`);
+            const url = new URL(`${context.baseURL}${location.pathname}`);
 
             url.searchParams.set("page", page.toString());
             searchParams.getAll("id").forEach((id) => {
