@@ -1,4 +1,4 @@
-import { json, type DataFunctionArgs } from "@remix-run/node";
+import { json, redirect, type DataFunctionArgs } from "@remix-run/node";
 import {
   Link,
   NavLink,
@@ -7,7 +7,6 @@ import {
   useLoaderData,
   useLocation,
   useOutletContext,
-  useRouteLoaderData,
   useSearchParams,
 } from "@remix-run/react";
 import {
@@ -16,8 +15,8 @@ import {
   getItemsCount,
   searchForItems,
 } from "~/data/items";
-import { action as deleteAction } from "./items/delete";
 import { type RootOutletContext } from "~/root";
+import { action as deleteAction } from "./items/delete";
 
 export async function loader(args: DataFunctionArgs) {
   const { request } = args;
@@ -53,6 +52,12 @@ export async function loader(args: DataFunctionArgs) {
   const itemsCount = getItemsCount();
   const numberOfPages = Math.ceil(itemsCount / take);
 
+  if (page > 1 && result.length === 0) {
+    const prevPage = page - 1;
+    url.searchParams.set("page", prevPage.toString());
+    return redirect(`${url.pathname}${url.search}`);
+  }
+
   return json({ items: result, itemsCount, page, numberOfPages });
 }
 
@@ -62,7 +67,6 @@ export default function Items() {
   const [searchParams] = useSearchParams();
   const location = useLocation();
   const context = useOutletContext<RootOutletContext>();
-  console.log(context);
 
   const getNavLinkClasses = (props: { isActive: boolean }) => {
     return props.isActive ? "" : "text-blue-400 underline hover:no-underline";
@@ -102,6 +106,11 @@ export default function Items() {
           const query = searchParams.get("query");
           if (query !== null) {
             redirectURL.searchParams.append("query", query);
+          }
+
+          const page = searchParams.get("page");
+          if (page !== null) {
+            redirectURL.searchParams.append("page", page);
           }
 
           const redirectPath = `${redirectURL.pathname}${redirectURL.search}`;
