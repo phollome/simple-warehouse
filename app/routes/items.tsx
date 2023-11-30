@@ -35,12 +35,25 @@ export async function loader(args: DataFunctionArgs) {
     const itemsCount = getItemsCount({ query });
 
     const result = searchForItems(query, { sort, skip, take });
+
+    if (page > 1 && result.length === 0) {
+      const prevPage = page - 1;
+      url.searchParams.set("page", prevPage.toString());
+      return redirect(`${url.pathname}${url.search}`);
+    }
+
     const numberOfPages = Math.ceil(itemsCount / take);
     return json({ items: result, itemsCount, page, numberOfPages });
   }
   if (ids.length > 0) {
     const parsedIDs = ids.map((id) => parseInt(id, 10));
     const result = getItemsByIDs(parsedIDs, { sort, skip, take });
+
+    if (page > 1 && result.length === 0) {
+      const prevPage = page - 1;
+      url.searchParams.set("page", prevPage.toString());
+      return redirect(`${url.pathname}${url.search}`);
+    }
 
     const itemsCount = getItemsCount({ ids: parsedIDs });
 
