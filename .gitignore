@@ -7,6 +7,10 @@ node_modules
 
 # test
 /coverage
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
 
 # config
 /app/config/
