@@ -1,15 +1,4 @@
-import {
-  redirect,
-  type DataFunctionArgs,
-  type MetaFunction,
-} from "@remix-run/node";
-
-export const meta: MetaFunction = () => {
-  return [
-    { title: "New Remix App" },
-    { name: "description", content: "Welcome to Remix!" },
-  ];
-};
+import { redirect, type DataFunctionArgs } from "@remix-run/node";
 
 export async function loader(args: DataFunctionArgs) {
   return redirect("/items");

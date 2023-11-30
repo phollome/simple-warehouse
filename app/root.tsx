@@ -1,4 +1,4 @@
-import { json, type LinksFunction } from "@remix-run/node";
+import { json, MetaArgs, type LinksFunction } from "@remix-run/node";
 import {
   Links,
   LiveReload,
@@ -19,7 +19,38 @@ export type RootOutletContext = {
 export const links: LinksFunction = () => [{ rel: "stylesheet", href: styles }];
 
 export async function loader() {
-  return json({ baseURL: config.get("baseURL") } as const);
+  const app = config.get("app");
+
+  return json({
+    baseURL: config.get("baseURL"),
+    app: {
+      name: app.name,
+      description: app.description,
+    },
+  } as const);
+}
+
+export function meta(args: MetaArgs<typeof loader>) {
+  const { data } = args;
+
+  const basicMeta = {
+    viewport: "width=device-width, initial-scale=1",
+  };
+
+  if (typeof data === "undefined") {
+    return [basicMeta];
+  }
+
+  return [
+    basicMeta,
+    {
+      title: data.app.name,
+    },
+    {
+      name: "description",
+      description: data.app.description,
+    },
+  ];
 }
 
 export default function App() {

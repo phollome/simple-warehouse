@@ -1,4 +1,10 @@
-import { json, redirect, type DataFunctionArgs } from "@remix-run/node";
+import {
+  json,
+  redirect,
+  type DataFunctionArgs,
+  type MetaFunction,
+  MetaArgs,
+} from "@remix-run/node";
 import {
   Link,
   NavLink,
@@ -17,6 +23,7 @@ import {
 } from "~/data/items";
 import { type RootOutletContext } from "~/root";
 import { action as deleteAction } from "./items/delete";
+import config from "~/config.server";
 
 export async function loader(args: DataFunctionArgs) {
   const { request } = args;
@@ -28,7 +35,7 @@ export async function loader(args: DataFunctionArgs) {
   const ids = searchParams.getAll("id");
   const sort = searchParams.get("sort");
   const page = parseInt(searchParams.get("page") ?? "1", 10);
-  const take = 5;
+  const take = config.get("app.numberOfItemsPerPage");
   const skip = (page - 1) * take;
 
   if (query !== null) {
@@ -129,7 +136,11 @@ export default function Items() {
           const redirectPath = `${redirectURL.pathname}${redirectURL.search}`;
 
           return (
-            <li key={`item-${item.id}`} className="px-4 py-2 border-2">
+            <li
+              key={`item-${item.id}`}
+              className="px-4 py-2 border-2"
+              data-testid="item"
+            >
               <fetcher.Form method="post" action="./delete">
                 <input type="hidden" name="id" value={item.id} />
                 <input type="hidden" name="redirect_url" value={redirectPath} />

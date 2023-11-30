@@ -2,7 +2,7 @@ import convict from "convict";
 import configFormatWithValidator from "convict-format-with-validator";
 import yaml from "js-yaml";
 import fs from "node:fs";
-import { version } from "../package.json";
+import pkginfo from "pkginfo";
 
 convict.addParser({ extension: ["yml", "yaml"], parse: yaml.load });
 convict.addFormat(configFormatWithValidator.url);
@@ -10,7 +10,7 @@ convict.addFormat(configFormatWithValidator.url);
 const config = convict({
   env: {
     doc: "The application environment.",
-    format: ["development"],
+    format: ["development", "test"],
     default: "development",
     env: "NODE_ENV",
   },
@@ -36,7 +36,7 @@ const config = convict({
     version: {
       doc: "The application version.",
       format: String,
-      default: version,
+      default: pkginfo.version,
       env: "APP_VERSION",
     },
     numberOfItemsPerPage: {
@@ -44,6 +44,16 @@ const config = convict({
       format: Number,
       default: 10,
       env: "APP_NUMBER_OF_ITEMS_PER_PAGE",
+    },
+  },
+  testing: {
+    e2e: {
+      waitAfterSubmit: {
+        doc: "The number of milliseconds to wait after submitting a form.",
+        format: Number,
+        default: 100,
+        env: "TESTING_E2E_WAIT_AFTER_SUBMIT",
+      },
     },
   },
 });
