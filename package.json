@@ -32,7 +32,6 @@
     "cross-env": "^7.0.3",
     "dotenv": "^16.3.1",
     "isbot": "^3.6.8",
-    "pkginfo": "^0.4.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "zod": "^3.22.4"
@@ -44,7 +43,6 @@
     "@types/convict": "^6.1.6",
     "@types/convict-format-with-validator": "^6.0.5",
     "@types/node": "^20.10.1",
-    "@types/pkginfo": "^0.4.3",
     "@types/react": "^18.2.20",
     "@types/react-dom": "^18.2.7",
     "@vitest/coverage-v8": "^0.34.6",

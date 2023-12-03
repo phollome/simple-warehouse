@@ -1,4 +1,4 @@
-import pkgInfo from "pkginfo";
+import { version } from "../../package.json";
 import { enhanceSchemaWithEnvNames } from "./utils";
 
 const schemaWithoutEnvNames = {
@@ -26,7 +26,7 @@ const schemaWithoutEnvNames = {
     version: {
       doc: "The application version.",
       format: String,
-      default: pkgInfo.version,
+      default: version,
     },
     numberOfItemsPerPage: {
       doc: "The number of items to display per page.",
