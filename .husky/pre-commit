@@ -2,3 +2,10 @@
 . "$(dirname -- "$0")/_/husky.sh"
 
 npm test
+
+# generate example env if config schema changed
+if git diff --quiet --exit-code HEAD~1 HEAD ./app/config/schema.ts; then
+    echo "Config schema changed. Updating \".env.example.\""
+    npm run scripts:generate-example-env
+    git add .env.example
+fi

@@ -4,13 +4,13 @@ import { extractEnvsWithDescriptions, generateExampleEnv } from "./utils";
 
 const schema = {
   field1: {
-    description: "some value",
+    doc: "some value",
     default: "someValue",
     env: "FIELD1",
   },
   field2: {
     someKey: {
-      description: "some nested value",
+      doc: "some nested value",
       default: "someNestedValue",
       env: "FIELD2_SOME_KEY",
     },
@@ -21,9 +21,9 @@ const filePath = `${__dirname}/.env.example`;
 test("extract environment variables with description from schema", async () => {
   const result = extractEnvsWithDescriptions(schema);
   const expected = [
-    { description: schema.field1.description, env: "FIELD1=someValue" },
+    { description: schema.field1.doc, env: "FIELD1=someValue" },
     {
-      description: schema.field2.someKey.description,
+      description: schema.field2.someKey.doc,
       env: "FIELD2_SOME_KEY=someNestedValue",
     },
   ];

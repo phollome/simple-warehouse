@@ -14,7 +14,8 @@
     "test": "vitest run --coverage",
     "test:e2e": "cross-env NODE_ENV=test playwright test",
     "test:e2e:ui": "npm run test:e2e -- --ui",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "scripts:generate-example-env": "tsx ./scripts/generate-example-env"
   },
   "dependencies": {
     "@conform-to/react": "^0.9.1",
@@ -31,7 +32,6 @@
     "cross-env": "^7.0.3",
     "dotenv": "^16.3.1",
     "isbot": "^3.6.8",
-    "js-yaml": "^4.1.0",
     "pkginfo": "^0.4.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
@@ -43,7 +43,6 @@
     "@remix-run/eslint-config": "^2.3.0",
     "@types/convict": "^6.1.6",
     "@types/convict-format-with-validator": "^6.0.5",
-    "@types/js-yaml": "^4.0.9",
     "@types/node": "^20.10.1",
     "@types/pkginfo": "^0.4.3",
     "@types/react": "^18.2.20",
@@ -53,6 +52,7 @@
     "husky": "^8.0.0",
     "prisma": "^5.6.0",
     "tailwindcss": "^3.3.5",
+    "tsx": "^4.6.2",
     "typescript": "^5.1.6",
     "vitest": "^0.34.6"
   },

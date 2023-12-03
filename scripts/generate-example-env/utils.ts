@@ -16,7 +16,7 @@ export function extractEnvsWithDescriptions(
     if (isLeaf) {
       const env = constantcase([...path, key].join("."));
       result.push({
-        description: schema[key].description,
+        description: schema[key].doc,
         env: `${env}=${schema[key].default}`,
       });
     } else {
