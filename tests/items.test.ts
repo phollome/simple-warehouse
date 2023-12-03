@@ -1,7 +1,10 @@
 import { test, expect } from "@playwright/test";
-import config from "~/config.server";
+import config from "~/config";
+
+// TODO: fix type issues and remove ts-ignore
 
 test("initial items", async ({ page }) => {
+  // @ts-ignore
   await page.goto(config.get("baseURL"));
 
   const items = await page.getByTestId("item").all();
@@ -12,6 +15,7 @@ test("initial items", async ({ page }) => {
 });
 
 test("search for items", async ({ page }) => {
+  // @ts-ignore
   await page.goto(config.get("baseURL"));
 
   const link = await page.getByText("Search");
@@ -28,6 +32,7 @@ test("search for items", async ({ page }) => {
 });
 
 test("add item", async ({ page }) => {
+  // @ts-ignore
   await page.goto(config.get("baseURL"));
 
   const link = await page.getByText("Add");

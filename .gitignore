@@ -3,7 +3,6 @@ node_modules
 /.cache
 /build
 /public/build
-.env
 
 # test
 /coverage
@@ -13,4 +12,8 @@ node_modules
 /playwright/.cache/
 
 # config
-/app/config/
+.env.*
+!.env.example
+
+# db
+/prisma/dev.db*

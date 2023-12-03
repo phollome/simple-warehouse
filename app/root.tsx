@@ -8,7 +8,7 @@ import {
   ScrollRestoration,
   useLoaderData,
 } from "@remix-run/react";
-import config from "~/config.server";
+import config from "~/config";
 
 import styles from "./tailwind.css";
 
@@ -18,13 +18,16 @@ export type RootOutletContext = {
 
 export const links: LinksFunction = () => [{ rel: "stylesheet", href: styles }];
 
+// TODO: fix type issues and remove ts-ignore
 export async function loader() {
   const app = config.get("app");
 
   return json({
     baseURL: config.get("baseURL"),
     app: {
+      // @ts-ignore
       name: app.name,
+      // @ts-ignore
       description: app.description,
     },
   } as const);

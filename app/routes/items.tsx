@@ -1,10 +1,4 @@
-import {
-  json,
-  redirect,
-  type DataFunctionArgs,
-  type MetaFunction,
-  MetaArgs,
-} from "@remix-run/node";
+import { json, redirect, type DataFunctionArgs } from "@remix-run/node";
 import {
   Link,
   NavLink,
@@ -15,6 +9,7 @@ import {
   useOutletContext,
   useSearchParams,
 } from "@remix-run/react";
+import config from "~/config";
 import {
   getItems,
   getItemsByIDs,
@@ -23,7 +18,6 @@ import {
 } from "~/data/items";
 import { type RootOutletContext } from "~/root";
 import { action as deleteAction } from "./items/delete";
-import config from "~/config.server";
 
 export async function loader(args: DataFunctionArgs) {
   const { request } = args;
@@ -35,7 +29,7 @@ export async function loader(args: DataFunctionArgs) {
   const ids = searchParams.getAll("id");
   const sort = searchParams.get("sort");
   const page = parseInt(searchParams.get("page") ?? "1", 10);
-  const take = config.get("app.numberOfItemsPerPage");
+  const take = config.get("app.numberOfItemsPerPage"); // TODO: fix type never
   const skip = (page - 1) * take;
 
   if (query !== null) {
