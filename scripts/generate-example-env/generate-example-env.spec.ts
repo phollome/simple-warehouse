@@ -3,6 +3,11 @@ import { afterAll, expect, test } from "vitest";
 import { extractEnvsWithDescriptions, generateExampleEnv } from "./utils";
 
 const schema = {
+  nodeENV: {
+    doc: "The node environment.",
+    default: "development",
+    env: "NODE_ENV",
+  },
   field1: {
     doc: "some value",
     default: "someValue",
