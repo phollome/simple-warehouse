@@ -20,7 +20,7 @@ export async function action(args: DataFunctionArgs) {
   const submission = parse(formData, { schema: deleteSchema });
 
   if (typeof submission.value !== "undefined" && submission.value !== null) {
-    deleteItem(submission.value.id);
+    await deleteItem(submission.value.id);
     return redirect(submission.value.redirect_url);
   }
 

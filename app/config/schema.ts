@@ -1,18 +1,18 @@
-import { version } from "../../package.json";
+import packageJSON from "../../package.json" assert { type: "json" };
 import { enhanceSchemaWithEnvNames } from "./utils";
 
 const schemaWithoutEnvNames = {
   nodeENV: {
     doc: "The application environment.",
-    format: ["development", "test"],
+    format: ["development", "test", "production"],
     default: "development",
   },
-  baseURL: {
-    doc: "The base url of the application.",
-    format: "url",
-    default: "http://localhost:3000",
-  },
   app: {
+    baseURL: {
+      doc: "The base url of the application.",
+      format: "url",
+      default: "http://localhost:3000",
+    },
     name: {
       doc: "The application name.",
       format: String,
@@ -26,7 +26,7 @@ const schemaWithoutEnvNames = {
     version: {
       doc: "The application version.",
       format: String,
-      default: version,
+      default: packageJSON.version,
     },
     numberOfItemsPerPage: {
       doc: "The number of items to display per page.",
@@ -48,6 +48,13 @@ const schemaWithoutEnvNames = {
       doc: "The database connection URL.",
       format: String,
       default: "file:./db.sqlite",
+    },
+    seed: {
+      numberOfItems: {
+        doc: "The number of items to seed the database with.",
+        format: Number,
+        default: 10,
+      },
     },
   },
 };

@@ -1,11 +1,8 @@
 import { test, expect } from "@playwright/test";
 import config from "~/config";
 
-// TODO: fix type issues and remove ts-ignore
-
 test("initial items", async ({ page }) => {
-  // @ts-ignore
-  await page.goto(config.get("baseURL"));
+  await page.goto(config.get("app.baseURL"));
 
   const items = await page.getByTestId("item").all();
 
@@ -15,8 +12,7 @@ test("initial items", async ({ page }) => {
 });
 
 test("search for items", async ({ page }) => {
-  // @ts-ignore
-  await page.goto(config.get("baseURL"));
+  await page.goto(config.get("app.baseURL"));
 
   const link = await page.getByText("Search");
   await link.click();
@@ -32,14 +28,13 @@ test("search for items", async ({ page }) => {
 });
 
 test("add item", async ({ page }) => {
-  // @ts-ignore
-  await page.goto(config.get("baseURL"));
+  await page.goto(config.get("app.baseURL"));
 
   const link = await page.getByText("Add");
   await link.click();
 
   const nameInput = await page.getByLabel("Name");
-  await nameInput.fill("test21");
+  await nameInput.fill(`test_${config.get("app.numberOfItemsPerPage") + 1}`);
 
   const addButton = (await page.$$("button")).find(async (button) => {
     return (await button.textContent()) === "Add";

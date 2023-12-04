@@ -18,17 +18,12 @@ export type RootOutletContext = {
 
 export const links: LinksFunction = () => [{ rel: "stylesheet", href: styles }];
 
-// TODO: fix type issues and remove ts-ignore
 export async function loader() {
-  const app = config.get("app");
-
   return json({
-    baseURL: config.get("baseURL"),
+    baseURL: config.get("app.baseURL"),
     app: {
-      // @ts-ignore
-      name: app.name,
-      // @ts-ignore
-      description: app.description,
+      name: config.get("app.name"),
+      description: config.get("app.description"),
     },
   } as const);
 }

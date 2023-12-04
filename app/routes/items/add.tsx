@@ -16,7 +16,7 @@ export async function action(args: DataFunctionArgs) {
   const submission = parse(formData, { schema: addItemSchema });
 
   if (typeof submission.value !== "undefined" && submission.value !== null) {
-    const result = addItem(submission.value);
+    const result = await addItem(submission.value);
     const url = new URL(request.url);
 
     const searchParams = url.searchParams;

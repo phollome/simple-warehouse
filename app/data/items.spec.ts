@@ -10,89 +10,46 @@ import {
   searchForItems,
 } from "./items";
 
-beforeAll(() => {
-  dropItems();
+beforeAll(async () => {
+  await dropItems();
 });
 
-test("count items", () => {
-  addItem({ name: "test1" });
-  addItem({ name: "test2" });
-  addItem({ name: "test3" });
-  addItem({ name: "test4" });
-  addItem({ name: "test5" });
+test("count items", async () => {
+  await addItem({ id: 1, name: "test1" });
+  await addItem({ id: 2, name: "test2" });
+  await addItem({ id: 3, name: "test3" });
+  await addItem({ id: 4, name: "test4" });
+  await addItem({ id: 5, name: "test5" });
 
-  expect(getItemsCount()).toBe(5);
-  expect(getItemsCount({ query: "test2" })).toBe(1);
-  expect(getItemsCount({ ids: [1, 3] })).toBe(2);
+  expect(await getItemsCount()).toBe(5);
+  expect(await getItemsCount({ query: "test2" })).toBe(1);
+  expect(await getItemsCount({ query: "test" })).toBe(5);
+  expect(await getItemsCount({ ids: [1, 3] })).toBe(2);
 });
 
-test("add item", () => {
-  addItem({ name: "test1" });
-  expect(getItemsCount()).toBe(1);
+test("add item", async () => {
+  await addItem({ id: 1, name: "test1" });
+  expect(await getItemsCount()).toBe(1);
 
-  const result = addItem({ name: "test2" });
-  expect(result).toEqual({ id: 2, name: "test2" });
+  const result = await addItem({ id: 2, name: "test2" });
+  expect(result).toContain({ id: 2, name: "test2" });
 
-  const items = getItems();
-  expect(items).toEqual([
+  const items = await getItems();
+  expect(items).toMatchObject([
     { id: 1, name: "test1" },
     { id: 2, name: "test2" },
-  ]);
-});
-
-test("search for items", () => {
-  addItem({ name: "test1" });
-  addItem({ name: "test2" });
-  addItem({ name: "test3" });
-  addItem({ name: "test4" });
-  addItem({ name: "test5" });
-
-  const items = getItems();
-  expect(items).toEqual([
-    { id: 1, name: "test1" },
-    { id: 2, name: "test2" },
-    { id: 3, name: "test3" },
-    { id: 4, name: "test4" },
-    { id: 5, name: "test5" },
-  ]);
-
-  expect(searchForItems("test2")).toEqual([{ id: 2, name: "test2" }]);
-
-  expect(searchForItems("test")).toEqual([
-    { id: 1, name: "test1" },
-    { id: 2, name: "test2" },
-    { id: 3, name: "test3" },
-    { id: 4, name: "test4" },
-    { id: 5, name: "test5" },
-  ]);
-
-  expect(searchForItems("test", { sort: "desc" })).toEqual([
-    { id: 5, name: "test5" },
-    { id: 4, name: "test4" },
-    { id: 3, name: "test3" },
-    { id: 2, name: "test2" },
-    { id: 1, name: "test1" },
-  ]);
-
-  expect(searchForItems("test", { skip: 3, take: 2 })).toEqual([
-    { id: 4, name: "test4" },
-    { id: 5, name: "test5" },
-  ]);
-
-  expect(searchForItems("test", { sort: "desc", skip: 1, take: 2 })).toEqual([
-    { id: 4, name: "test4" },
-    { id: 3, name: "test3" },
   ]);
 });
 
-test("get items", () => {
-  addItem({ name: "test1" });
-  addItem({ name: "test2" });
-  addItem({ name: "test3" });
-  addItem({ name: "test4" });
-  addItem({ name: "test5" });
+test("search for items", async () => {
+  await addItem({ id: 1, name: "test1" });
+  await addItem({ id: 2, name: "test2" });
+  await addItem({ id: 3, name: "test3" });
+  await addItem({ id: 4, name: "test4" });
+  await addItem({ id: 5, name: "test5" });
 
-  expect(getItems()).toEqual([
+  const items = await getItems();
+  expect(items).toMatchObject([
     { id: 1, name: "test1" },
     { id: 2, name: "test2" },
     { id: 3, name: "test3" },
@@ -100,7 +57,19 @@ test("get items", () => {
     { id: 5, name: "test5" },
   ]);
 
-  expect(getItems({ sort: "desc" })).toEqual([
+  expect(await searchForItems("test2")).toMatchObject([
+    { id: 2, name: "test2" },
+  ]);
+
+  expect(await searchForItems("test")).toMatchObject([
+    { id: 1, name: "test1" },
+    { id: 2, name: "test2" },
+    { id: 3, name: "test3" },
+    { id: 4, name: "test4" },
+    { id: 5, name: "test5" },
+  ]);
+
+  expect(await searchForItems("test", { sort: "desc" })).toMatchObject([
     { id: 5, name: "test5" },
     { id: 4, name: "test4" },
     { id: 3, name: "test3" },
@@ -108,62 +77,100 @@ test("get items", () => {
     { id: 1, name: "test1" },
   ]);
 
-  expect(getItems({ skip: 3, take: 2 })).toEqual([
+  expect(await searchForItems("test", { skip: 3, take: 2 })).toMatchObject([
     { id: 4, name: "test4" },
-    { id: 5, name: "test5" },
-  ]);
-
-  expect(getItems({ sort: "desc", skip: 1, take: 2 })).toEqual([
-    { id: 4, name: "test4" },
-    { id: 3, name: "test3" },
-  ]);
-});
-
-test("get items by id", () => {
-  addItem({ name: "test1" });
-  addItem({ name: "test2" });
-  addItem({ name: "test3" });
-  addItem({ name: "test4" });
-  addItem({ name: "test5" });
-
-  const item = getItemByID(1);
-  expect(item).toEqual({ id: 1, name: "test1" });
-
-  expect(getItemsByIDs([1, 3])).toEqual([
-    { id: 1, name: "test1" },
-    { id: 3, name: "test3" },
-  ]);
-  expect(getItemsByIDs([1, 3], { sort: "desc" })).toEqual([
-    { id: 3, name: "test3" },
-    { id: 1, name: "test1" },
-  ]);
-
-  expect(getItemsByIDs([1, 2, 3, 5], { skip: 2, take: 3 })).toEqual([
-    { id: 3, name: "test3" },
     { id: 5, name: "test5" },
   ]);
 
   expect(
-    getItemsByIDs([1, 2, 3, 5], { sort: "desc", skip: 1, take: 2 })
-  ).toEqual([
+    await searchForItems("test", { sort: "desc", skip: 1, take: 2 })
+  ).toMatchObject([
+    { id: 4, name: "test4" },
+    { id: 3, name: "test3" },
+  ]);
+});
+
+test("get items", async () => {
+  await addItem({ id: 1, name: "test1" });
+  await addItem({ id: 2, name: "test2" });
+  await addItem({ id: 3, name: "test3" });
+  await addItem({ id: 4, name: "test4" });
+  await addItem({ id: 5, name: "test5" });
+
+  expect(await getItems()).toMatchObject([
+    { id: 1, name: "test1" },
+    { id: 2, name: "test2" },
+    { id: 3, name: "test3" },
+    { id: 4, name: "test4" },
+    { id: 5, name: "test5" },
+  ]);
+
+  expect(await getItems({ sort: "desc" })).toMatchObject([
+    { id: 5, name: "test5" },
+    { id: 4, name: "test4" },
+    { id: 3, name: "test3" },
+    { id: 2, name: "test2" },
+    { id: 1, name: "test1" },
+  ]);
+
+  expect(await getItems({ skip: 3, take: 2 })).toMatchObject([
+    { id: 4, name: "test4" },
+    { id: 5, name: "test5" },
+  ]);
+
+  expect(await getItems({ sort: "desc", skip: 1, take: 2 })).toMatchObject([
+    { id: 4, name: "test4" },
+    { id: 3, name: "test3" },
+  ]);
+});
+
+test("get items by id", async () => {
+  await addItem({ id: 1, name: "test1" });
+  await addItem({ id: 2, name: "test2" });
+  await addItem({ id: 3, name: "test3" });
+  await addItem({ id: 4, name: "test4" });
+  await addItem({ id: 5, name: "test5" });
+
+  const item = await getItemByID(1);
+  expect(item).toMatchObject({ id: 1, name: "test1" });
+
+  expect(await getItemsByIDs([1, 3])).toMatchObject([
+    { id: 1, name: "test1" },
+    { id: 3, name: "test3" },
+  ]);
+  expect(await getItemsByIDs([1, 3], { sort: "desc" })).toMatchObject([
+    { id: 3, name: "test3" },
+    { id: 1, name: "test1" },
+  ]);
+
+  expect(await getItemsByIDs([1, 2, 3, 5], { skip: 2, take: 3 })).toMatchObject(
+    [
+      { id: 3, name: "test3" },
+      { id: 5, name: "test5" },
+    ]
+  );
+
+  expect(
+    await getItemsByIDs([1, 2, 3, 5], { sort: "desc", skip: 1, take: 2 })
+  ).toMatchObject([
     { id: 3, name: "test3" },
     { id: 2, name: "test2" },
   ]);
 });
 
-test("delete items", () => {
-  const { id: _id1 } = addItem({ name: "test1" });
-  const { id: _id2 } = addItem({ name: "test2" });
-  const { id: _id3 } = addItem({ name: "test3" });
+test("delete items", async () => {
+  await addItem({ id: 1, name: "test1" });
+  await addItem({ id: 2, name: "test2" });
+  await addItem({ id: 3, name: "test3" });
 
-  deleteItem(_id2);
-  expect(getItemsCount()).toBe(2);
-  expect(getItems()).toEqual([
+  await deleteItem(2);
+  expect(await getItemsCount()).toBe(2);
+  expect(await getItems()).toMatchObject([
     { id: 1, name: "test1" },
     { id: 3, name: "test3" },
   ]);
 });
 
-afterEach(() => {
-  dropItems();
+afterEach(async () => {
+  await dropItems();
 });

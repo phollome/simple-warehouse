@@ -16,4 +16,5 @@ node_modules
 !.env.example
 
 # db
-/prisma/dev.db*
+dev.db*
+*.sqlite

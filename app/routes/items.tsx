@@ -33,9 +33,9 @@ export async function loader(args: DataFunctionArgs) {
   const skip = (page - 1) * take;
 
   if (query !== null) {
-    const itemsCount = getItemsCount({ query });
+    const itemsCount = await getItemsCount({ query });
 
-    const result = searchForItems(query, { sort, skip, take });
+    const result = await searchForItems(query, { sort, skip, take });
 
     if (page > 1 && result.length === 0) {
       const prevPage = page - 1;
@@ -48,7 +48,7 @@ export async function loader(args: DataFunctionArgs) {
   }
   if (ids.length > 0) {
     const parsedIDs = ids.map((id) => parseInt(id, 10));
-    const result = getItemsByIDs(parsedIDs, { sort, skip, take });
+    const result = await getItemsByIDs(parsedIDs, { sort, skip, take });
 
     if (page > 1 && result.length === 0) {
       const prevPage = page - 1;
@@ -56,14 +56,14 @@ export async function loader(args: DataFunctionArgs) {
       return redirect(`${url.pathname}${url.search}`);
     }
 
-    const itemsCount = getItemsCount({ ids: parsedIDs });
+    const itemsCount = await getItemsCount({ ids: parsedIDs });
 
     const numberOfPages = Math.ceil(itemsCount / take);
     return json({ items: result, itemsCount, page, numberOfPages });
   }
-  const result = getItems({ skip, take, sort });
+  const result = await getItems({ skip, take, sort });
 
-  const itemsCount = getItemsCount();
+  const itemsCount = await getItemsCount();
   const numberOfPages = Math.ceil(itemsCount / take);
 
   if (page > 1 && result.length === 0) {
