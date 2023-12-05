@@ -1,6 +1,6 @@
 import fs from "node:fs/promises";
 import { afterAll, expect, test } from "vitest";
-import { extractEnvsWithDescriptions, generateExampleEnv } from "./utils";
+import { extractEnvsWithDescriptions, generateEnv } from "./utils";
 
 const schema = {
   nodeENV: {
@@ -36,7 +36,7 @@ test("extract environment variables with description from schema", async () => {
 });
 
 test("run script (load schema file, enhance schema with environment variables names and write .env file)", async () => {
-  await generateExampleEnv(schema, filePath);
+  await generateEnv(schema, filePath);
   const envFile = await fs.readFile(filePath, "utf-8");
 
   const expectedEnvFile =

@@ -1,5 +1,5 @@
 import constantcase from "@stdlib/string-constantcase";
-import fs from "fs/promises";
+import fs from "fs-extra";
 
 export function extractEnvsWithDescriptions(
   schema: Record<string, any>,
@@ -32,10 +32,7 @@ export function extractEnvsWithDescriptions(
   return result;
 }
 
-export async function generateExampleEnv(
-  schema: Record<string, any>,
-  path: string
-) {
+export async function generateEnv(schema: Record<string, any>, path: string) {
   const envsWithDescription = extractEnvsWithDescriptions(schema);
   const envFile = envsWithDescription
     .map((item, index, array) => {
@@ -48,6 +45,6 @@ export async function generateExampleEnv(
       return `# ${env}${index < array.length - 1 ? "\n" : ""}`;
     })
     .join("\n");
-  await fs.writeFile(path, envFile);
-  // extract the environment variables names from the schema
+
+  await fs.outputFile(path, envFile);
 }

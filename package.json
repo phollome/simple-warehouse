@@ -16,7 +16,7 @@
     "test:e2e": "cross-env NODE_ENV=test playwright test",
     "test:e2e:ui": "npm run test:e2e -- --ui",
     "prepare": "husky install",
-    "scripts:generate-example-env": "tsx ./scripts/generate-example-env"
+    "scripts:generate-example-env": "tsx ./scripts/generate-env"
   },
   "dependencies": {
     "@conform-to/react": "^0.9.1",
@@ -29,10 +29,12 @@
     "@remix-run/serve": "^2.3.0",
     "@remix-run/v1-route-convention": "^0.1.4",
     "@stdlib/string-constantcase": "^0.1.1",
+    "commander": "^11.1.0",
     "convict": "^6.2.4",
     "convict-format-with-validator": "^6.2.0",
     "cross-env": "^7.0.3",
     "dotenv-cli": "^7.3.0",
+    "fs-extra": "^11.2.0",
     "isbot": "^3.6.8",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
@@ -45,6 +47,7 @@
     "@remix-run/eslint-config": "^2.3.0",
     "@types/convict": "^6.1.6",
     "@types/convict-format-with-validator": "^6.0.5",
+    "@types/fs-extra": "^11.0.4",
     "@types/node": "^20.10.1",
     "@types/react": "^18.2.20",
     "@types/react-dom": "^18.2.7",
