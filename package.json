@@ -16,7 +16,7 @@
     "test:e2e": "cross-env NODE_ENV=test playwright test",
     "test:e2e:ui": "npm run test:e2e -- --ui",
     "prepare": "husky install",
-    "scripts:generate-example-env": "tsx ./scripts/generate-env"
+    "scripts:generate-env": "tsx ./scripts/generate-env"
   },
   "dependencies": {
     "@conform-to/react": "^0.9.1",

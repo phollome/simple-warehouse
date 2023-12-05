@@ -1,11 +1,13 @@
 import constantcase from "@stdlib/string-constantcase";
 import fs from "fs-extra";
+import config from "~/config";
 
 export function extractEnvsWithDescriptions(
   schema: Record<string, any>,
   path: string[] = []
 ) {
   const result: { description?: string; env: string }[] = [];
+
   const keys = Object.keys(schema);
   for (const key of keys) {
     if (key === "nodeENV") {
@@ -19,7 +21,7 @@ export function extractEnvsWithDescriptions(
       const env = constantcase([...path, key].join("."));
       result.push({
         description: schema[key].doc,
-        env: `${env}=${schema[key].default}`,
+        env: `${env}=${config.get([...path, key].join("."))}`,
       });
     } else {
       const nestedEnvVariablesNames = extractEnvsWithDescriptions(schema[key], [
