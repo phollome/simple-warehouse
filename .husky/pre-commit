@@ -6,6 +6,6 @@ npm test
 # generate example env if config schema changed
 if git diff --quiet --exit-code HEAD~1 HEAD ./app/config/schema.ts; then
     echo "Config schema changed. Updating \".env.example.\""
-    npm run scripts:generate-example-env
+    npm run scripts:generate-env -- --file .env.example
     git add .env.example
 fi
