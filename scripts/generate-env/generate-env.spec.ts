@@ -1,34 +1,59 @@
-import fs from "node:fs/promises";
-import { afterAll, expect, test } from "vitest";
-import { extractEnvsWithDescriptions, generateEnv } from "./utils";
-import schema from "~/config/schema";
-import constantcase from "@stdlib/string-constantcase";
+import fse from "fs-extra";
+import childProcess from "node:child_process";
+import { expect, test } from "vitest";
 
-const filePath = `${__dirname}/.env.example`;
+const waitTick = () => new Promise((resolve) => setTimeout(resolve, 0));
 
-test("extract environment variables with description from schema", async () => {
-  const result = extractEnvsWithDescriptions(schema);
-  expect(result[0]).toEqual({
-    description: schema.app.baseURL.doc,
-    env: `${constantcase("app.baseURL")}=${schema.app.baseURL.default}`,
-  });
+test("generate .env.test file", async () => {
+  await childProcess.exec(
+    `tsx scripts/generate-env -f ${__dirname}/.env.test -e test`
+  );
+
+  // necessary to wait for the file to be created
+  while (!(await fse.pathExists(`${__dirname}/.env.test`))) {
+    await new Promise((resolve) => setTimeout(resolve, 0));
+  }
+
+  const envFile = await fse.readFile(`${__dirname}/.env.test`, "utf-8");
+  expect(envFile).toContain("DATABASE_URL=file:./db.test.sqlite");
+
+  await fse.rm(`${__dirname}/.env.test`);
 });
 
-test("run script (load schema file, enhance schema with environment variables names and write .env file)", async () => {
-  await generateEnv(schema, filePath);
-  const envFile = await fs.readFile(filePath, "utf-8");
+test("generate .env.development file", async () => {
+  await childProcess.exec(
+    `tsx scripts/generate-env -f ${__dirname}/.env.development -e development`
+  );
 
-  const expectedEnvFile =
-    "# " +
-    schema.app.baseURL.doc +
-    "\n# " +
-    constantcase("app.baseURL") +
-    "=" +
-    schema.app.baseURL.default +
-    "\n\n";
-  expect(envFile).toContain(expectedEnvFile);
+  // necessary to wait for the file to be created
+  while (!(await fse.pathExists(`${__dirname}/.env.development`))) {
+    await new Promise((resolve) => setTimeout(resolve, 0));
+  }
+
+  const envFile = await fse.readFile(`${__dirname}/.env.development`, "utf-8");
+  expect(envFile).toContain("DATABASE_URL=file:./db.development.sqlite");
+
+  await fse.rm(`${__dirname}/.env.development`);
 });
 
-afterAll(() => {
-  fs.rm(filePath);
+test("generate .env.example file", async () => {
+  await childProcess.exec(
+    `tsx scripts/generate-env -f ${__dirname}/.env.example`
+  );
+
+  // necessary to wait for the file to be created
+  while (!(await fse.pathExists(`${__dirname}/.env.example`))) {
+    await new Promise((resolve) => setTimeout(resolve, 0));
+  }
+
+  const envFile = await fse.readFile(`${__dirname}/.env.example`, "utf-8");
+  expect(envFile).toContain("# APP_BASE_URL=");
+  expect(envFile).toContain("# APP_NAME=");
+  expect(envFile).toContain("# APP_DESCRIPTION=");
+  expect(envFile).toContain("# APP_NUMBER_OF_ITEMS_PER_PAGE=");
+  expect(envFile).toContain("# TESTING_E2E_WAIT_AFTER_SUBMIT=");
+  expect(envFile).toContain("# DATABASE_URL=");
+  expect(envFile).toContain("# DATABASE_SEED_NUMBER_OF_ITEMS=");
+
+  await fse.rm(`${__dirname}/.env.example`);
 });
