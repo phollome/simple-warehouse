@@ -1,5 +1,5 @@
 import constantcase from "@stdlib/string-constantcase";
-import packageJSON from "../../package.json" assert { type: "json" };
+import packageJSON from "../../package.json";
 import convict from "convict";
 import configFormatWithValidator from "convict-format-with-validator";
 

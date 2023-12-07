@@ -8,8 +8,6 @@ async function seed() {
     throw new Error("Cannot seed in production.");
   }
 
-  process.env.DATABASE_URL = config.get("database.url");
-
   await dropItems();
 
   const numberOfItems = config.get("database.seed.numberOfItems");
