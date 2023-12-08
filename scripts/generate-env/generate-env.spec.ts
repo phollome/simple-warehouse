@@ -1,52 +1,36 @@
 import fse from "fs-extra";
 import childProcess from "node:child_process";
-import { expect, test } from "vitest";
+import { promisify } from "node:util";
+import { afterAll, expect, test } from "vitest";
 
-const waitTick = () => new Promise((resolve) => setTimeout(resolve, 0));
+const exec = promisify(childProcess.exec);
+
+const path = `${__dirname}/__tmp`;
 
 test("generate .env.test file", async () => {
-  await childProcess.exec(
-    `tsx scripts/generate-env -f ${__dirname}/.env.test -e test`
-  );
+  await exec(`tsx scripts/generate-env -f ${path}/.env.test -e test`);
 
-  // necessary to wait for the file to be created
-  while (!(await fse.pathExists(`${__dirname}/.env.test`))) {
-    await new Promise((resolve) => setTimeout(resolve, 0));
-  }
-
-  const envFile = await fse.readFile(`${__dirname}/.env.test`, "utf-8");
+  const envFile = await fse.readFile(`${path}/.env.test`, "utf-8");
   expect(envFile).toContain("DATABASE_URL=file:./db.test.sqlite");
 
-  await fse.rm(`${__dirname}/.env.test`);
+  await fse.rm(`${path}/.env.test`);
 });
 
 test("generate .env.development file", async () => {
-  await childProcess.exec(
-    `tsx scripts/generate-env -f ${__dirname}/.env.development -e development`
+  await exec(
+    `tsx scripts/generate-env -f ${path}/.env.development -e development`
   );
 
-  // necessary to wait for the file to be created
-  while (!(await fse.pathExists(`${__dirname}/.env.development`))) {
-    await new Promise((resolve) => setTimeout(resolve, 0));
-  }
-
-  const envFile = await fse.readFile(`${__dirname}/.env.development`, "utf-8");
+  const envFile = await fse.readFile(`${path}/.env.development`, "utf-8");
   expect(envFile).toContain("DATABASE_URL=file:./db.development.sqlite");
 
-  await fse.rm(`${__dirname}/.env.development`);
+  await fse.rm(`${path}/.env.development`);
 });
 
 test("generate .env.example file", async () => {
-  await childProcess.exec(
-    `tsx scripts/generate-env -f ${__dirname}/.env.example`
-  );
+  await exec(`tsx scripts/generate-env -f ${path}/.env.example`);
 
-  // necessary to wait for the file to be created
-  while (!(await fse.pathExists(`${__dirname}/.env.example`))) {
-    await new Promise((resolve) => setTimeout(resolve, 0));
-  }
-
-  const envFile = await fse.readFile(`${__dirname}/.env.example`, "utf-8");
+  const envFile = await fse.readFile(`${path}/.env.example`, "utf-8");
   expect(envFile).toContain("# APP_BASE_URL=");
   expect(envFile).toContain("# APP_NAME=");
   expect(envFile).toContain("# APP_DESCRIPTION=");
@@ -55,5 +39,22 @@ test("generate .env.example file", async () => {
   expect(envFile).toContain("# DATABASE_URL=");
   expect(envFile).toContain("# DATABASE_SEED_NUMBER_OF_ITEMS=");
 
-  await fse.rm(`${__dirname}/.env.example`);
+  await fse.rm(`${path}/.env.example`);
+});
+
+test("prevent overwriting existing file", async () => {
+  await fse.outputFile(`${path}/.env.to-be-overwritten`, "test");
+
+  const { stderr } = await exec(
+    `tsx scripts/generate-env -f ${path}/.env.to-be-overwritten`
+  );
+  expect(stderr).toContain(
+    `File "${path}/.env.to-be-overwritten" already exists.`
+  );
+
+  await fse.rm(`${path}/.env.to-be-overwritten`);
+});
+
+afterAll(async () => {
+  await fse.rmdir(path, { recursive: true });
 });

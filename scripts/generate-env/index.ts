@@ -14,7 +14,8 @@ program
   .option(
     "-f, --file <file>",
     "file path (if set environment will be ignored))"
-  );
+  )
+  .option("--force", "overwrite existing file");
 
 program.parse(process.argv);
 
@@ -89,6 +90,15 @@ export async function generateEnv(filePath: string) {
     } \n# ${constantcase("database.seed.numberOfItems")}=${config.get(
       "database.seed.numberOfItems"
     )}`;
+  }
+
+  const fileExists = await fse.pathExists(filePath);
+  const force = Boolean(options.force);
+
+  if (fileExists && force === false) {
+    throw new Error(
+      `File "${filePath}" already exists. Use --force option to overwrite it.`
+    );
   }
 
   await fse.outputFile(filePath, fileContent);
