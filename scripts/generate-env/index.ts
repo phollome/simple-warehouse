@@ -3,6 +3,7 @@ import { program } from "commander";
 import convict from "convict";
 import configFormatWithValidator from "convict-format-with-validator";
 import fse from "fs-extra";
+import confirm from "@inquirer/confirm";
 import { schema as baseSchema } from "~/config/schema";
 
 convict.addFormat(configFormatWithValidator.url);
@@ -15,7 +16,8 @@ program
     "-f, --file <file>",
     "file path (if set environment will be ignored))"
   )
-  .option("--force", "overwrite existing file");
+  .option("--force", "overwrite existing file")
+  .option("-i, --interactive", "interactive mode");
 
 program.parse(process.argv);
 
@@ -96,18 +98,38 @@ export async function generateEnv(filePath: string) {
   const force = Boolean(options.force);
 
   if (fileExists && force === false) {
-    throw new Error(
-      `File "${filePath}" already exists. Use --force option to overwrite it.`
-    );
+    const interactive = Boolean(options.interactive);
+    if (interactive === false) {
+      throw new Error(
+        `File "${filePath}" already exists. Use --force option to overwrite it.`
+      );
+    }
+
+    const answer = await confirm({
+      message: `File "${filePath}" already exists. Do you want to overwrite it? (y/N)`,
+      default: false,
+    });
+    if (answer === false) {
+      return "aborted";
+    }
   }
 
   await fse.outputFile(filePath, fileContent);
+
+  return "ok";
 }
 
 generateEnv(filePath)
-  .catch(console.error)
-  .then(() =>
-    console.log(
-      `Environment variables file "${filePath}" generated successfully.`
-    )
-  );
+  .then((result) => {
+    if (result === "aborted") {
+      console.log("Aborted.");
+    }
+    if (result === "ok") {
+      console.log(
+        `Environment variables file "${filePath}" generated successfully.`
+      );
+    }
+  })
+  .catch((error) => {
+    console.error(error);
+  });
