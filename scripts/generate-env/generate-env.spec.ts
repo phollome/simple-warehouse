@@ -13,7 +13,7 @@ test("generate .env.test file", async () => {
   const envFile = await fse.readFile(`${path}/.env.test`, "utf-8");
   expect(envFile).toContain("DATABASE_URL=file:./db.test.sqlite");
 
-  await fse.rm(`${path}/.env.test`);
+  await fse.remove(`${path}/.env.test`);
 });
 
 test("generate .env.development file", async () => {
@@ -24,7 +24,7 @@ test("generate .env.development file", async () => {
   const envFile = await fse.readFile(`${path}/.env.development`, "utf-8");
   expect(envFile).toContain("DATABASE_URL=file:./db.development.sqlite");
 
-  await fse.rm(`${path}/.env.development`);
+  await fse.remove(`${path}/.env.development`);
 });
 
 test("generate .env.example file", async () => {
@@ -39,7 +39,7 @@ test("generate .env.example file", async () => {
   expect(envFile).toContain("# DATABASE_URL=");
   expect(envFile).toContain("# DATABASE_SEED_NUMBER_OF_ITEMS=");
 
-  await fse.rm(`${path}/.env.example`);
+  await fse.remove(`${path}/.env.example`);
 });
 
 test("prevent overwriting existing file", async () => {
@@ -52,7 +52,7 @@ test("prevent overwriting existing file", async () => {
     `File "${path}/.env.to-be-overwritten" already exists.`
   );
 
-  await fse.rm(`${path}/.env.to-be-overwritten`);
+  await fse.remove(`${path}/.env.to-be-overwritten`);
 });
 
 test("prevent overwriting existing file (interactive)", () => {
@@ -64,7 +64,7 @@ test("prevent overwriting existing file (interactive)", () => {
         "run",
         "scripts:generate-env",
         "--",
-        "-f ${path}/.env.to-be-overwritten",
+        `-f ${path}/.env.to-be-overwritten`,
         "-i",
       ]);
 
@@ -81,6 +81,55 @@ test("prevent overwriting existing file (interactive)", () => {
 
       subprocess.on("close", () => {
         expect(aborted).toBe(true);
+        resolve(null);
+      });
+    });
+  });
+});
+
+test("overwrite existing file", async () => {
+  await fse.outputFile(`${path}/.env.to-be-overwritten`, "test");
+
+  await exec(
+    `npm run scripts:generate-env -- -f ${path}/.env.to-be-overwritten --force`
+  );
+  const content = await fse.readFile(`${path}/.env.to-be-overwritten`, "utf-8");
+  expect(content).not.toEqual("test");
+
+  await fse.remove(`${path}/.env.to-be-overwritten`);
+});
+
+test("overwrite existing file (interactive)", () => {
+  return new Promise((resolve) => {
+    expect.assertions(1);
+    fse.outputFile(`${path}/.env.to-be-overwritten`, "test").then(() => {
+      let overwritten = false;
+      const subprocess = childProcess.spawn("npm", [
+        "run",
+        "scripts:generate-env",
+        "--",
+        `-f ${path}/.env.to-be-overwritten`,
+        "-i",
+      ]);
+
+      subprocess.stdout.on("data", (data) => {
+        const questionItems = "Do you want to overwrite it? (y/N)".split(" ");
+        const successItems =
+          "Environment variables file .env.to-be-overwritten generated successfully.".split(
+            " "
+          );
+
+        if (questionItems.every((item) => data.toString().includes(item))) {
+          subprocess.stdin.end("y\n");
+        }
+        if (successItems.every((item) => data.toString().includes(item))) {
+          subprocess.stdin.end();
+          overwritten = true;
+        }
+      });
+
+      subprocess.on("close", () => {
+        expect(overwritten).toBe(true);
         resolve(null);
       });
     });
