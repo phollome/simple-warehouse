@@ -10,13 +10,15 @@
     "dev": "remix dev --manual",
     "start": "remix-serve ./build/index.js",
     "typecheck": "tsc",
-    "pretest": "npm run build",
-    "test": "cross-env NODE_ENV=test vitest run --coverage",
+    "test": "dotenv -e .env.test vitest run --coverage",
     "pretest:e2e": "npm run build",
-    "test:e2e": "cross-env NODE_ENV=test playwright test",
+    "test:e2e": "dotenv -e .env.test playwright test",
     "test:e2e:ui": "npm run test:e2e -- --ui",
     "prepare": "husky install",
-    "scripts:generate-env": "tsx ./scripts/generate-env"
+    "scripts:generate-env": "tsx ./scripts/generate-env",
+    "migrate": "npx prisma migrate dev",
+    "migrate:test": "dotenv -e .env.test -- npm run migrate -- --skip-seed",
+    "migrate:development": "dotenv -e .env.development -- npm run migrate"
   },
   "dependencies": {
     "@conform-to/react": "^0.9.1",

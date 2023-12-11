@@ -1,5 +1,4 @@
 import constantcase from "@stdlib/string-constantcase";
-import packageJSON from "../../package.json";
 import convict from "convict";
 import configFormatWithValidator from "convict-format-with-validator";
 
@@ -34,7 +33,7 @@ export const schema = {
     version: {
       doc: "The application version.",
       format: String,
-      default: packageJSON.version,
+      default: "0.1.0",
       env: constantcase("app.version"),
     },
     numberOfItemsPerPage: {
