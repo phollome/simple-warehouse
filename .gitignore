@@ -10,10 +10,11 @@ node_modules
 /playwright-report/
 /blob-report/
 /playwright/.cache/
+/__tmp
 
 # config
 .env.*
-!.env.example
+!/.env.example
 
 # db
 dev.db*

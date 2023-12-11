@@ -1,4 +1,16 @@
-# Welcome to Remix!
+# Welcome 👋
+
+## First step
+
+Run initial setup:
+
+```sh
+make
+```
+
+This will setup environments and test and development databases. Finally it runs all tests.
+
+## Remix Info
 
 - [Remix Docs](https://remix.run/docs)
 

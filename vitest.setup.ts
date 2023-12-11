@@ -1,5 +1,3 @@
-import config from "~/config";
+import dotenv from "dotenv";
 
-if (typeof process.env.DaTABASE_URL === "undefined") {
-  process.env.DATABASE_URL = config.get("database.url");
-}
+dotenv.config({ path: `.env.test` });
