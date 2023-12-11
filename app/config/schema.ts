@@ -62,7 +62,7 @@ export const schema = {
           throw new Error("Database URL must provided as string.");
         }
       },
-      default: null,
+      default: "./db.sqlite",
       env: constantcase("database.url"),
     },
     seed: {
